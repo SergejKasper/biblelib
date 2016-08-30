@@ -18,7 +18,6 @@ export class AddBooksPage {
   @ViewChild(List) bookList: List;
   private books:Book[] = [];
   private interactionUrl:string;
-  private stompClient:any;
 
   constructor(private navCtrl: NavController, private bookUtils:BookUtils,private gatewayUtils:GatewayUtils, private http:Http) {
   }
@@ -35,17 +34,13 @@ export class AddBooksPage {
   }
 
   add() {
-    //, new RequestOptions({ headers: new Headers({ 'Content-Type': 'application/json','X-CSRF-TOKEN' : Cookie.get('CSRF-TOKEN') }) })
     this.bookUtils.getISBN().then((isbn:string)=>{
       //Check if this is a 'real' ISBN (10 or 13 digets) or a custom/self-defined ISBN
+      //alert(isbn);
       if(isbn.length !== 10 && isbn.length !== 13 ) return this.bookUtils.getCover().then((cover:string) => this.gatewayUtils.addBook(isbn, cover));
-      return this.gatewayUtils.addBook(isbn);
+      this.gatewayUtils.addBook(isbn).subscribe(
+         res => alert("Added Book" + JSON.stringify(res.json())),
+         error => alert("Ein fehler ist aufgetreten: " + JSON.stringify(<any>error)));
     })
-    /*this.bookUtils.augmentWithCode(book)
-    .then((book) => {
-
-    }, () => {
-      this.http.post(this.interactionUrl, {isbn: JSON.stringify("9781418589141"), action: "NEW"}, new RequestOptions({ headers: new Headers({ 'Content-Type': 'application/json','X-CSRF-TOKEN' : Cookie.get('CSRF-TOKEN') }) }));
-    });*/
   }
 }

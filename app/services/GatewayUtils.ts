@@ -13,9 +13,11 @@ import {BookUtils} from './BookUtils';
 export class GatewayUtils {
   private borrowerUrl:string;
   private interactionUrl:string;
+  private interactionOpts:RequestOptions;
   constructor(private alertController: AlertController, private http:Http, private bookUtils:BookUtils){
     this.borrowerUrl = "http://" + bookUtils.host + ":8080/socketapi/borrowers";
     this.interactionUrl = "http://" + bookUtils.host + ":8080/socketapi/interaction";
+    this.interactionOpts = new RequestOptions({ headers: new Headers({ 'Content-Type': 'application/json'}) });
   }
   public provideInfo():Observable<Response> {
     return this.http.get(this.borrowerUrl);
@@ -23,16 +25,16 @@ export class GatewayUtils {
   public borrowBook(isbn: string, borrower:Borrower, cover?:string): any {
     let data:any = {isbn: isbn, action: "BORROW", borrower: borrower};
     if(cover) data.cover = cover;
-    this.http.post(this.interactionUrl, JSON.stringify(data));
+    return this.http.post(this.interactionUrl, data, interactionOpts);
   }
   public returnBook(isbn: string, borrower:Borrower){
     let data:any = {isbn: isbn, action: "RETURN", borrower: borrower};
-    this.http.post(this.interactionUrl, JSON.stringify(data));
+    return this.http.post(this.interactionUrl, data, interactionOpts);
   }
-  public addBook(isbn: string, cover?:string){
+  public addBook(isbn: string, cover?:string):Observable<Response>{
     let data:any = {isbn: isbn, action: "NEW"};
     if(cover) data.cover = cover;
-    this.http.post(this.interactionUrl, JSON.stringify(data), new RequestOptions({ headers: new Headers({ 'Content-Type': 'application/json','X-CSRF-TOKEN' : Cookie.get('CSRF-TOKEN') }) }));
+    return this.http.post(this.interactionUrl, data, interactionOpts);
   }
   /*public getBorrowers(): Observable<Borrower[]> {
   return this.http.get(this.borrowerUrl).map(this.extractData)
