@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
-import {GatewayUtils} from '../../services/gatewayUtils';
+import {GatewayUtils} from '../../services/GatewayUtils';
 import {BookUtils} from '../../services/BookUtils';
 import {Book} from '../../dao/Book';
 import {Borrower} from '../../dao/Borrower';
@@ -13,6 +13,7 @@ import {SearchPipe} from "../../pipes/SearchPipe";
 })
 export class ReturnBooksPage {
   private borrowers:Borrower[] = [];
+  private itemsearch:string = "";
 
   constructor(private navCtrl: NavController, private bookUtils:BookUtils, private gatewayUtils:GatewayUtils) {
   }
@@ -24,7 +25,9 @@ export class ReturnBooksPage {
 
   returnBook(borrower:Borrower) {
     this.bookUtils.getISBN().then((isbn:string) => {
-      return this.gatewayUtils.returnBook(isbn, borrower);
+      return this.gatewayUtils.returnBook(isbn, borrower).subscribe(
+         res => {},
+         error => alert("Ein fehler ist aufgetreten: " + JSON.stringify(<any>error)));;
     });
   }
 }

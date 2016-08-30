@@ -5,6 +5,7 @@ import {GatewayUtils} from '../../services/GatewayUtils';
 import {Book} from '../../dao/Book';
 import {Borrower} from '../../dao/Borrower';
 import {SearchPipe} from "../../pipes/SearchPipe";
+
 @Component({
   templateUrl: 'build/pages/borrowBooks/borrowBooks.html',
   providers: [BookUtils, GatewayUtils],
@@ -13,7 +14,6 @@ import {SearchPipe} from "../../pipes/SearchPipe";
 export class BorrowBooksPage {
   private borrowers:Borrower[] = [];
   private itemsearch:string = "";
-  private interactionUrl:string;
 
   constructor(private navCtrl: NavController, private bookUtils:BookUtils, private gatewayUtils:GatewayUtils) {
 
@@ -28,8 +28,10 @@ export class BorrowBooksPage {
 
   borrowBook(borrower:Borrower) {
     this.bookUtils.getISBN()
-    .then((isbn) => {
-      this.gatewayUtils.borrowBook(isbn, borrower)
+    .then((isbn:string) => {
+      this.gatewayUtils.borrowBook(isbn, borrower).subscribe(
+         res => {},
+         error => alert("Ein fehler ist aufgetreten: " + JSON.stringify(<any>error)));
     });
   }
 }

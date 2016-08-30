@@ -11,13 +11,8 @@
 
 <ion-content padding class="return-books">
   <ion-list>
-  <ion-item class="item-remove-animate" *ngFor="let borrower of borrowers | search:itemsearch" type="item-text-wrap" href="#/tab/add/{{borrower.id}}">
-    <!-- ion-avatar item-left>
-      <img src="{{borrower.image}}">
-    </ion-avatar -->
-    <br>
-    <h2>{{borrower.name}}</h2>
-    <br>
-  </ion-item>
-</ion-list>
+    <ion-item class="item-remove-animate" *ngFor="let borrower of borrowers | search:itemsearch" type="item-text-wrap">
+      <button button light large block (click)="returnBook(borrower);">{{borrower.name}}</button>
+    </ion-item>
+  </ion-list>
 </ion-content>
