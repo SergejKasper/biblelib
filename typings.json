@@ -2,6 +2,9 @@
   "dependencies": {},
   "devDependencies": {},
   "globalDependencies": {
-    "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504"
+    "bcryptjs": "registry:dt/bcryptjs#2.3.0+20151217030501",
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
+    "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654",
+    "sockjs": "registry:dt/sockjs#0.3.0+20160626235243"
   }
 }

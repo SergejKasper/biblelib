@@ -7,21 +7,5 @@
 </ion-header>
 
 <ion-content padding class="add-books">
-  <ion-list>
-  <ion-item class="item-remove-animate item-avatar item-icon-right" *ngFor="let book of books" type="item-text-wrap">
-    <ion-avatar item-left>
-      <img src="{{book.image}}">
-    </ion-avatar>
-    <h2>{{book.title}}</h2>
-    <p>{{book.description}}</p>
-    <p>
-      ISBN/ID: {{book.id}}
-    </p>
-    <button large clear item-right ng-click="remove(book)">
-    <ion-icon name="remove-circle" style="padding-right: 0;"></ion-icon>
-    </button>
-  </ion-item>
-</ion-list>
-<button padding fab fab-bottom fab-right fab-fixed (click)="add()"><ion-icon name="checkmark"></ion-icon></button>
-<button padding secondary fab fab-bottom fab-left fab-fixed (click)="add()"><ion-icon name="add"></ion-icon></button>
+  <button light large block (click)="add()" style="height: 100%;">Buch erfassen </button>
 </ion-content>

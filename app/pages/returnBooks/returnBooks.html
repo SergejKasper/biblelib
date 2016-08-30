@@ -4,20 +4,20 @@
       Bücher zurückgeben
     </ion-title>
   </ion-navbar>
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="itemsearch"></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content padding class="return-books">
   <ion-list>
-  <ion-item class="item-remove-animate item-avatar item-icon-right" *ngFor="let book of books" type="item-text-wrap" href="#/tab/add/{{book.id}}">
-    <ion-avatar item-left>
-      <img src="{{book.image}}">
-    </ion-avatar>
-    <h2>{{book.title}}</h2>
-    <p>{{book.description}}</p>
-    <i class="icon ion-chevron-right icon-accessory"></i>
-    <button  clear item-right class="button-assertive" ng-click="remove(book)">
-      Abbrechen
-    </button>
+  <ion-item class="item-remove-animate" *ngFor="let borrower of borrowers | search:itemsearch" type="item-text-wrap" href="#/tab/add/{{borrower.id}}">
+    <!-- ion-avatar item-left>
+      <img src="{{borrower.image}}">
+    </ion-avatar -->
+    <br>
+    <h2>{{borrower.name}}</h2>
+    <br>
   </ion-item>
 </ion-list>
 </ion-content>

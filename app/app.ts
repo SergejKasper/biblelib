@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, provide} from '@angular/core';
 import {Platform, ionicBootstrap} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {TabsPage} from './pages/tabs/tabs';
-
+import {ExRequestOptions} from './ExRequestOptions';
+import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from '@angular/http';
 
 @Component({
   template: '<ion-nav [root]="rootPage"></ion-nav>'
@@ -23,3 +24,7 @@ export class MyApp {
 }
 
 ionicBootstrap(MyApp);
+/*, [
+  HTTP_PROVIDERS,
+  provide(RequestOptions, {useClass: ExRequestOptions})
+]*/

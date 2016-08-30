@@ -1,107 +1,51 @@
+/// <reference path="../../../typings/index.d.ts"/>
+
 import {Component, ViewChild} from '@angular/core';
 import {Alert, NavController} from 'ionic-angular';
+import {Http, Response, Headers, RequestOptions } from '@angular/http';
+import {Cookie } from 'ng2-cookies/ng2-cookies';
 import {List} from 'ionic-angular';
 import {Book} from '../../dao/Book';
+import {BookUtils} from '../../services/BookUtils';
+import {GatewayUtils} from '../../services/GatewayUtils';
 import {BarcodeScanner, Camera } from 'ionic-native';
+
 @Component({
-  templateUrl: 'build/pages/addBooks/addBooks.html'
+  templateUrl: 'build/pages/addBooks/addBooks.html',
+  providers: [BookUtils, GatewayUtils]
 })
 export class AddBooksPage {
   @ViewChild(List) bookList: List;
   private books:Book[] = [];
+  private interactionUrl:string;
+  private stompClient:any;
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController, private bookUtils:BookUtils,private gatewayUtils:GatewayUtils, private http:Http) {
+  }
   onPageDidEnter() {
-    this.books = JSON.parse(localStorage.getItem("todos"));
+    this.books = JSON.parse(localStorage.getItem("books"));
     if(!this.books) {
-        this.books = [{
-          id: 0,
-          title: 'Ben Sparrow',
-          description: 'You on your way?',
-          image: 'img/ben.png'
-        }, {
-          id: 1,
-          title: 'Max Lynx',
-          description: 'Hey, it\'s me',
-          image: 'img/max.png'
-        }, {
-          id: 2,
-          title: 'Adam Bradleyson',
-          description: 'I should buy a boat',
-          image: 'img/adam.jpg'
-        }, {
-          id: 4,
-          title: 'Mike Harrington',
-          description: 'This is good ice cream.',
-          image: 'img/mike.png'
-        }];
+        this.books = [];
     }
   }
 
   delete(index: number) {
       this.books.splice(index, 1);
-      localStorage.setItem("todos", JSON.stringify(this.books));
+      localStorage.setItem("books", JSON.stringify(this.books));
   }
 
   add() {
-    var book = {};
-    let augmentWithCode = (book):any => {
-      return BarcodeScanner.scan().then(function(data){
-        //$scope.response = data;
-        book.id = data.text;
-        return book;
-      },function(error){
-        alert(error);
-      });
-    }
-    let augmentWithInfo = (book:Book):any => {
-      return new Promise<Book>((resolve, reject) =>{
-        let alert = Alert.create({
-          title: 'Titel und Beschreibung',
-          inputs: [
-            {
-              name: 'title',
-              placeholder: 'Buchtitel'
-            },
-            {
-              name: 'description',
-              placeholder: 'Beschreibung'
-            }
-          ],
-          subTitle: 'Gib den Titel und die Beschreibung an',
-          buttons: [
-              { text: 'Abbrechen' },
-              {
-                text: 'Übernehmen',
-                type: 'button-positive',
-                handler: data => {
-                  if (!data.title) {
-                    //don't allow the user to close unless he enters wifi password
-                    //e.preventDefault();
-                  } else {
-                    book.title = data.title;
-                    book.description = data.description;
-                    alert.dismiss().then(() => resolve(book));
-                  }
-                }
-              }
-            ]
-          });
-        this.navCtrl.present(alert);
-      });
-    };
-  let augmentWithImage = (book):any => {
-      return Camera.getPicture({}).then(function(imageData) {
-        book.image = "data:image/jpeg;base64," + imageData;
-        return book;
-      }, function(err) {
-              // An error occured. Show a message to the user
-    });
-  }
-  augmentWithCode(book).then((book) => augmentWithInfo(book)).then((book) => augmentWithImage(book)).then((book)=>{
-    this.books.push(book);
-    window.alert(JSON.stringify(book));
-    localStorage.setItem("todos", JSON.stringify(this.books));
-  });
+    //, new RequestOptions({ headers: new Headers({ 'Content-Type': 'application/json','X-CSRF-TOKEN' : Cookie.get('CSRF-TOKEN') }) })
+    this.bookUtils.getISBN().then((isbn:string)=>{
+      //Check if this is a 'real' ISBN (10 or 13 digets) or a custom/self-defined ISBN
+      if(isbn.length !== 10 && isbn.length !== 13 ) return this.bookUtils.getCover().then((cover:string) => this.gatewayUtils.addBook(isbn, cover));
+      return this.gatewayUtils.addBook(isbn);
+    })
+    /*this.bookUtils.augmentWithCode(book)
+    .then((book) => {
+
+    }, () => {
+      this.http.post(this.interactionUrl, {isbn: JSON.stringify("9781418589141"), action: "NEW"}, new RequestOptions({ headers: new Headers({ 'Content-Type': 'application/json','X-CSRF-TOKEN' : Cookie.get('CSRF-TOKEN') }) }));
+    });*/
   }
 }
